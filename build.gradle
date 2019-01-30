@@ -1,0 +1,19 @@
+plugins {
+    id "de.undercouch.download" version "3.4.3"
+    id 'com.palantir.docker' version '0.21.0'
+}
+
+task download(type: Download) {
+    src 'https://search.maven.org/remotecontent?filepath=co/elastic/apm/elastic-apm-agent/1.3.0/elastic-apm-agent-1.3.0.jar'
+    dest buildDir
+    onlyIfModified true
+}
+
+docker {
+    name 'blackleg/openjdk-jre-apm'
+    tags 'latest', '10-1.3.0'
+    buildArgs([BASE_IMAGE: 'openjdk:10-jre-slim', 'APM_VERSION': '1.3.0'])
+    files "$buildDir/elastic-apm-agent-1.3.0.jar"
+    pull true
+    noCache true
+}
