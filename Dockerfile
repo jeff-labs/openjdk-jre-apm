@@ -1,7 +1,7 @@
-FROM openjdk:10-jre-slim
+ARG BASE_IMAGE
+FROM $BASE_IMAGE
 
-ENV APM_VERSION="1.3.0"
+ARG APM_VERSION
+ENV APM_VERSION=$APM_VERSION
 
-RUN curl https://search.maven.org/remotecontent?filepath=co/elastic/apm/elastic-apm-agent/${APM_VERSION}/elastic-apm-agent-${APM_VERSION}.jar --output elastic-apm-agent.jar
-
-RUN ls
+COPY elastic-apm-agent-$APM_VERSION.jar  elastic-apm-agent.jar
