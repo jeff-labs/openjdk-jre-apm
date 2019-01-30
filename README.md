@@ -1,5 +1,4 @@
-# openjdk-jre-apm
-
+# MrJeff OpenJDK docker image with Elastic APM
 
 Download APM
 
