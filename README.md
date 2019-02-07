@@ -1,6 +1,9 @@
 # OpenJDK with Elastic APM
 MrJeff OpenJDK with Elastic APM docker image
 
+![docker pulls](https://img.shields.io/docker/pulls/mrjeffapp/openjdk-jre-apm.svg?style=plastic)
+![docker stars](https://img.shields.io/docker/stars/mrjeffapp/openjdk-jre-apm.svg?style=flat)
+
 ## How to use the docker image
 Extend your image from our image. 
 ```Dockerfile
