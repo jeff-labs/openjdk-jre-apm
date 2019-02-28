@@ -18,7 +18,7 @@ CMD exec java -Djava.security.egd=file:/dev/./urandom -jar -javaagent:elastic-ap
 1. Change the gradle properties to set a new Java version or Elastic APM version.
 ```gradle
 ext {
-    javaVersion = "10"
+    javaVersion = "11"
     apmVersion = "1.4.0"
 }
 ```
