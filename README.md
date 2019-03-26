@@ -19,7 +19,7 @@ CMD exec java -Djava.security.egd=file:/dev/./urandom -jar -javaagent:elastic-ap
 ```gradle
 ext {
     javaVersion = "11"
-    apmVersion = "1.4.0"
+    apmVersion = "1.5.0"
 }
 ```
 2. Download Elastic APM.
