@@ -1,11 +1,11 @@
 plugins {
     id "de.undercouch.download" version "3.4.3"
-    id 'com.palantir.docker' version '0.21.0'
+    id 'com.palantir.docker' version '0.22.0'
 }
 
 ext {
     javaVersion = "11"
-    apmVersion = "1.5.0"
+    apmVersion = "1.6.0"
 }
 
 task download(type: Download) {
