@@ -1,8 +1,10 @@
-# OpenJDK with Elastic APM
-Mr Jeff's OpenJDK with Elastic APM docker image
+# OpenJDK with Elastic APM java agent
+Mr Jeff's OpenJDK docker image with Elastic APM java agent.
 
 ![docker pulls](https://img.shields.io/docker/pulls/mrjeffapp/openjdk-jre-apm.svg?style=plastic)
 ![docker stars](https://img.shields.io/docker/stars/mrjeffapp/openjdk-jre-apm.svg?style=flat)
+
+[Elastic APM java agent reference](https://www.elastic.co/guide/en/apm/agent/java/current/index.html)
 
 ## How to use the docker image
 Extend your image from our image. 
