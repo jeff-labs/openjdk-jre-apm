@@ -5,7 +5,7 @@ plugins {
 
 ext {
     javaVersion = "11"
-    apmVersion = "1.6.0"
+    apmVersion = "1.6.1"
 }
 
 task download(type: Download) {

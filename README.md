@@ -9,7 +9,7 @@ Mr Jeff's OpenJDK docker image with Elastic APM java agent.
 ## How to use the docker image
 Extend your image from our image. 
 ```Dockerfile
-FROM mrjeffapp/openjdk-jre-apm:11-1.6.0
+FROM mrjeffapp/openjdk-jre-apm:11-1.6.1
 
 ENV JAVA_OPTS=""
 
@@ -21,7 +21,7 @@ CMD exec java -Djava.security.egd=file:/dev/./urandom -jar -javaagent:elastic-ap
 ```gradle
 ext {
     javaVersion = "11"
-    apmVersion = "1.6.0"
+    apmVersion = "1.6.1"
 }
 ```
 2. Download Elastic APM.
