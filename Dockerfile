@@ -1,7 +1,0 @@
-ARG BASE_IMAGE
-FROM $BASE_IMAGE
-
-ARG APM_VERSION
-ENV APM_VERSION=$APM_VERSION
-
-COPY elastic-apm-agent-$APM_VERSION.jar  elastic-apm-agent.jar

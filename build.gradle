@@ -30,6 +30,7 @@ task dockerJava10(type: DockerBuildImage) {
     inputDir.set(buildDir)
     dockerFile.set(file("${buildDir}/docker/Dockerfile"))
     buildArgs.set(["BASE_IMAGE": "openjdk:10-jre-slim", "APM_VERSION": "${apmVersion}"])
+    name
     tags.set(["mrjeffapp/openjdk-jre-apm:10", "mrjeffapp/openjdk-jre-apm:10-${apmVersion}"])
     noCache.set(true)
     pull.set(true)
@@ -45,8 +46,23 @@ task dockerJava11(type: DockerBuildImage) {
     pull.set(true)
 }
 
-task docker {
+task dockerImage {
     dependsOn(["dockerJava10", "dockerJava11"])
+}
+
+// TODO: Read credentials from file or env
+docker {
+    registryCredentials {
+        username = 'YOUR_DOCKER_USERNAME'
+        password = 'YOUR_DOCKER_PASSWORD'
+    }
+}
+
+import com.bmuschko.gradle.docker.tasks.image.DockerPushImage
+
+task dockerPush(type: DockerPushImage) {
+    dependsOn("dockerImage")
+    imageName.set("mrjeffapp/openjdk-jre-apm")
 }
 
 task clean {
