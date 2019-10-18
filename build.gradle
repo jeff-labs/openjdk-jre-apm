@@ -1,24 +1,70 @@
 plugins {
-    id "de.undercouch.download" version "3.4.3"
-    id 'com.palantir.docker' version '0.22.0'
+    id "de.undercouch.download" version "4.0.0"
+    id "com.bmuschko.docker-remote-api" version "5.2.0"
 }
 
 ext {
-    javaVersion = "11"
-    apmVersion = "1.8.0"
+    apmVersion = "1.10.0"
 }
 
-task download(type: Download) {
+task downloadApm(type: Download) {
     src "https://search.maven.org/remotecontent?filepath=co/elastic/apm/elastic-apm-agent/${apmVersion}/elastic-apm-agent-${apmVersion}.jar"
     dest buildDir
     onlyIfModified true
 }
 
+import com.bmuschko.gradle.docker.tasks.image.Dockerfile
+
+task dockerFile(type: Dockerfile) {
+    arg('BASE_IMAGE')
+    from('$BASE_IMAGE')
+    arg('APM_VERSION')
+    environmentVariable("APM_VERSION", '$APM_VERSION')
+    copyFile('elastic-apm-agent-$APM_VERSION.jar', 'elastic-apm-agent.jar')
+}
+
+import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
+
+task dockerJava10(type: DockerBuildImage) {
+    dependsOn(["downloadApm", "dockerFile"])
+    inputDir.set(buildDir)
+    dockerFile.set(file("${buildDir}/docker/Dockerfile"))
+    buildArgs.set(["BASE_IMAGE": "openjdk:10-jre-slim", "APM_VERSION": "${apmVersion}"])
+    name
+    tags.set(["mrjeffapp/openjdk-jre-apm:10", "mrjeffapp/openjdk-jre-apm:10-${apmVersion}"])
+    noCache.set(true)
+    pull.set(true)
+}
+
+task dockerJava11(type: DockerBuildImage) {
+    dependsOn(["downloadApm", "dockerFile"])
+    inputDir.set(buildDir)
+    dockerFile.set(file("${buildDir}/docker/Dockerfile"))
+    buildArgs.set(["BASE_IMAGE": "openjdk:11-jre-slim", "APM_VERSION": "${apmVersion}"])
+    tags.set(['mrjeffapp/openjdk-jre-apm:latest', "mrjeffapp/openjdk-jre-apm:11", "mrjeffapp/openjdk-jre-apm:11-${apmVersion}"])
+    noCache.set(true)
+    pull.set(true)
+}
+
+task dockerImage {
+    dependsOn(["dockerJava10", "dockerJava11"])
+}
+
+// TODO: Read credentials from file or env
 docker {
-    name 'mrjeffapp/openjdk-jre-apm'
-    tags 'latest', "${javaVersion}", "${javaVersion}-${apmVersion}"
-    buildArgs([BASE_IMAGE: "openjdk:${javaVersion}-jre-slim", 'APM_VERSION': "${apmVersion}"])
-    files "$buildDir/elastic-apm-agent-${apmVersion}.jar"
-    pull true
-    noCache true
+    registryCredentials {
+        username = 'YOUR_DOCKER_USERNAME'
+        password = 'YOUR_DOCKER_PASSWORD'
+    }
+}
+
+import com.bmuschko.gradle.docker.tasks.image.DockerPushImage
+
+task dockerPush(type: DockerPushImage) {
+    dependsOn("dockerImage")
+    imageName.set("mrjeffapp/openjdk-jre-apm")
+}
+
+task clean {
+    buildDir.deleteDir()
 }
