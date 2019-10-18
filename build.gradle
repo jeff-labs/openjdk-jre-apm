@@ -7,6 +7,13 @@ ext {
     apmVersion = "1.10.0"
 }
 
+docker {
+    registryCredentials {
+        username = project.getProperty("username")
+        password = project.getProperty("password")
+    }
+}
+
 task downloadApm(type: Download) {
     src "https://search.maven.org/remotecontent?filepath=co/elastic/apm/elastic-apm-agent/${apmVersion}/elastic-apm-agent-${apmVersion}.jar"
     dest buildDir
@@ -50,19 +57,15 @@ task dockerImage {
     dependsOn(["dockerJava10", "dockerJava11"])
 }
 
-// TODO: Read credentials from file or env
-docker {
-    registryCredentials {
-        username = 'YOUR_DOCKER_USERNAME'
-        password = 'YOUR_DOCKER_PASSWORD'
-    }
-}
-
 import com.bmuschko.gradle.docker.tasks.image.DockerPushImage
 
 task dockerPush(type: DockerPushImage) {
     dependsOn("dockerImage")
     imageName.set("mrjeffapp/openjdk-jre-apm")
+}
+
+task dockerRelease {
+    dependsOn("dockerPush")
 }
 
 task clean {
