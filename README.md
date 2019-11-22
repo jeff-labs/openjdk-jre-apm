@@ -1,5 +1,5 @@
 # OpenJDK with Elastic APM java agent
-Jeff's OpenJDK (8/10/11)docker image with Elastic APM java agent.
+Jeff's OpenJDK (8/10/11) docker image with Elastic APM java agent.
 
 ![docker pulls](https://img.shields.io/docker/pulls/mrjeffapp/openjdk-jre-apm.svg?style=plastic)
 ![docker stars](https://img.shields.io/docker/stars/mrjeffapp/openjdk-jre-apm.svg?style=flat)
