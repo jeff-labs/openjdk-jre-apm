@@ -1,5 +1,5 @@
 plugins {
-    id "de.undercouch.download" version "4.0.1"
+    id "de.undercouch.download" version "4.0.4"
     id "com.bmuschko.docker-remote-api" version "6.4.0"
 }
 
@@ -13,6 +13,8 @@ docker {
         password = project.getProperty("password")
     }
 }
+
+import de.undercouch.gradle.tasks.download.Download
 
 task downloadApm(type: Download) {
     src "https://search.maven.org/remotecontent?filepath=co/elastic/apm/elastic-apm-agent/${apmVersion}/elastic-apm-agent-${apmVersion}.jar"
@@ -32,45 +34,56 @@ task dockerFile(type: Dockerfile) {
 
 import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
 
-task dockerJava8(type: DockerBuildImage) {
-    dependsOn(["downloadApm", "dockerFile"])
-    inputDir.set(buildDir)
-    dockerFile.set(file("${buildDir}/docker/Dockerfile"))
-    buildArgs.set(["BASE_IMAGE": "openjdk:8-jre-slim", "APM_VERSION": "${apmVersion}"])
-    images.set(["mrjeffapp/openjdk-jre-apm:8", "mrjeffapp/openjdk-jre-apm:8-${apmVersion}"])
-    noCache.set(true)
-    pull.set(true)
-}
+task dockerBuildImages {
+    def builds = [
+            "openjdk:8-jre-slim"        : [
+                    "mrjeffapp/openjdk-jre-apm:8",
+                    "mrjeffapp/openjdk-jre-apm:8-${apmVersion}"
+            ],
+            "openjdk:10-jre-slim"       : [
+                    "mrjeffapp/openjdk-jre-apm:10",
+                    "mrjeffapp/openjdk-jre-apm:10-${apmVersion}"
+            ],
+            "openjdk:11-jre-slim"       : [
+                    "mrjeffapp/openjdk-jre-apm:latest",
+                    "mrjeffapp/openjdk-jre-apm:11",
+                    "mrjeffapp/openjdk-jre-apm:11-${apmVersion}"
+            ],
+            "adoptopenjdk:11-jre-openj9": [
+                    "mrjeffapp/adoptopenjdk-jre-openj9-apm:11",
+                    "mrjeffapp/adoptopenjdk-jre-openj9-apm:11-${apmVersion}"
+            ],
+            "adoptopenjdk:14-jre-openj9": [
+                    "mrjeffapp/adoptopenjdk-jre-openj9-apm:latest",
+                    "mrjeffapp/adoptopenjdk-jre-openj9-apm:14",
+                    "mrjeffapp/adoptopenjdk-jre-openj9-apm:14-${apmVersion}"
+            ],
+    ]
 
-task dockerJava10(type: DockerBuildImage) {
-    dependsOn(["downloadApm", "dockerFile"])
-    inputDir.set(buildDir)
-    dockerFile.set(file("${buildDir}/docker/Dockerfile"))
-    buildArgs.set(["BASE_IMAGE": "openjdk:10-jre-slim", "APM_VERSION": "${apmVersion}"])
-    images.set(["mrjeffapp/openjdk-jre-apm:10", "mrjeffapp/openjdk-jre-apm:10-${apmVersion}"])
-    noCache.set(true)
-    pull.set(true)
-}
+    def dependsOnTasks = builds.each { baseImage, tags ->
+        def cleanedBaseImage = baseImage.replaceAll("\\W", "_")
+        task "dockerBuildImage-${cleanedBaseImage}" (type: DockerBuildImage) {
+            dependsOn(["downloadApm", "dockerFile"])
+            inputDir.set(project.buildDir)
+            dockerFile.set(file("${project.buildDir}/docker/Dockerfile"))
+            buildArgs.set(["BASE_IMAGE": baseImage, "APM_VERSION": "${apmVersion}"])
+            images.set(tags)
+            noCache.set(true)
+            pull.set(true)
+        }
+    }.collect {
+        def cleanedBaseImage = it.key.replaceAll("\\W", "_")
+        return "dockerBuildImage-${cleanedBaseImage}"
+    }
 
-task dockerJava11(type: DockerBuildImage) {
-    dependsOn(["downloadApm", "dockerFile"])
-    inputDir.set(buildDir)
-    dockerFile.set(file("${buildDir}/docker/Dockerfile"))
-    buildArgs.set(["BASE_IMAGE": "openjdk:11-jre-slim", "APM_VERSION": "${apmVersion}"])
-    images.set(['mrjeffapp/openjdk-jre-apm:latest', "mrjeffapp/openjdk-jre-apm:11", "mrjeffapp/openjdk-jre-apm:11-${apmVersion}"])
-    noCache.set(true)
-    pull.set(true)
-}
-
-task dockerImage {
-    dependsOn(["dockerJava8", "dockerJava10", "dockerJava11"])
+    dependsOn(dependsOnTasks)
 }
 
 import com.bmuschko.gradle.docker.tasks.image.DockerPushImage
 
 task dockerPush(type: DockerPushImage) {
-    dependsOn("dockerImage")
-    images.set(["mrjeffapp/openjdk-jre-apm"])
+    dependsOn("dockerBuildImages")
+    images.set(["mrjeffapp/openjdk-jre-apm", "mrjeffapp/adoptopenjdk-jre-openj9-apm"])
 }
 
 task dockerRelease {
