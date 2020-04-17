@@ -49,11 +49,11 @@ task dockerBuildImages {
                     "mrjeffapp/openjdk-jre-apm:11",
                     "mrjeffapp/openjdk-jre-apm:11-${apmVersion}"
             ],
-            "adoptopenjdk:11-jre-openj9": [
+            "adoptopenjdk/openjdk11-openj9:debianslim-jre": [
                     "mrjeffapp/adoptopenjdk-jre-openj9-apm:11",
                     "mrjeffapp/adoptopenjdk-jre-openj9-apm:11-${apmVersion}"
             ],
-            "adoptopenjdk:14-jre-openj9": [
+            "adoptopenjdk/openjdk14-openj9:debianslim-jre": [
                     "mrjeffapp/adoptopenjdk-jre-openj9-apm:latest",
                     "mrjeffapp/adoptopenjdk-jre-openj9-apm:14",
                     "mrjeffapp/adoptopenjdk-jre-openj9-apm:14-${apmVersion}"
