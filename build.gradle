@@ -1,16 +1,54 @@
 plugins {
-    id "de.undercouch.download" version "4.0.1"
+    id "de.undercouch.download" version "4.0.4"
     id "com.bmuschko.docker-remote-api" version "6.4.0"
 }
 
 ext {
-    apmVersion = "1.15.0"
+    apmVersion = "1.17.0"
 }
 
-docker {
-    registryCredentials {
-        username = project.getProperty("username")
-        password = project.getProperty("password")
+import groovy.swing.SwingBuilder
+
+def readPassword(String dialogTitle, String dialogMessage) {
+    def console = System.console()
+    if (console != null) {
+        return console.readPassword(dialogMessage)
+    }
+    def showModal = true
+    while (showModal) {
+        def enteredPassword = null
+        new SwingBuilder().edt {
+            dialog(
+                    modal: true,
+                    title: dialogTitle,
+                    alwaysOnTop: true,
+                    resizable: false,
+                    locationRelativeTo: null,
+                    pack: true,
+                    show: true
+            ) {
+                vbox {
+                    label(text: dialogMessage)
+                    input = passwordField()
+                    button(defaultButton: true, text: 'OK', actionPerformed: {
+                        enteredPassword = new String(input.password)
+                        dispose()
+                        showModal = false;
+                    })
+                }
+            }
+        }
+        return enteredPassword
+    }
+}
+
+def usernameProperty = project.findProperty("username")
+if (usernameProperty) {
+    docker {
+        registryCredentials {
+            username = usernameProperty
+            password = readPassword("Password", "DockerHub password for $usernameProperty")
+        }
     }
 }
 
