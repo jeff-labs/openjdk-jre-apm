@@ -19,5 +19,11 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USER }}
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
 
+      - name: Build images
+        run: make build
+
+      - name: Test images
+        run: make test
+
       - name: Publish images
         run: make push
