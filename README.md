@@ -11,7 +11,7 @@ Jeff's OpenJDK (8/10/11) docker image with Elastic APM java agent.
 ## How to use the docker image
 Extend your image from our image. 
 ```Dockerfile
-FROM mrjeffapp/openjdk-jre-apm:11-1.18.0
+FROM mrjeffapp/openjdk-jre-apm:11-1.20.0
 
 ENV JAVA_OPTS=""
 
@@ -20,16 +20,8 @@ CMD exec java -Djava.security.egd=file:/dev/./urandom -jar -javaagent:elastic-ap
 
 ## How to build a new image
 
-1. Change the gradle properties to set a new Java version or Elastic APM version.
-```gradle
-ext {
-    apmVersion = "1.18.0"
-}
-```
+1. Change the makefile properties to set a new Java version or Elastic APM version.
 
-2. Build and release the new image with your docker credentials.
+2. Merge your changes to the master branch.
 
-```bash
-./gradlew dockerRelease  -Pusername=user123
-
-```
+3. A GitHub actions job should release the new image.
