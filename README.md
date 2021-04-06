@@ -11,7 +11,7 @@ Jeff's OpenJDK (8/10/11) docker image with Elastic APM java agent.
 ## How to use the docker image
 Extend your image from our image. 
 ```Dockerfile
-FROM mrjeffapp/openjdk-jre-apm:11-1.20.0
+FROM mrjeffapp/openjdk-jre-apm:11-1.22.0
 
 ENV JAVA_OPTS=""
 
