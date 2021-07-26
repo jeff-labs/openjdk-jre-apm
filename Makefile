@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := help
 
-apm_version = 1.24.0
+apm_version = 1.25.0
 
 help:
 	@echo 'Run make build'
